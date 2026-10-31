@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="AI Traffic Signal Control — real-time vehicle detection and adaptive four-way signal optimization.">
+  <title>AI Traffic Signal Control</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>tailwind.config={theme:{extend:{colors:{primary:{50:'#eef2ff',100:'#e0e7ff',500:'#6366f1',600:'#4f46e5',700:'#4338ca',800:'#3730a3'}}}}};</script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+  <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+<div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+<section id="authView" class="auth-view">
+  <div class="auth-shell">
+    <div class="auth-brand-panel">
+      <div class="brand-mark large"><i data-lucide="traffic-cone"></i></div>
+      <div class="eyebrow light">INTELLIGENT TRAFFIC MANAGEMENT</div>
+      <h1>AI Traffic Signal Control</h1>
+      <p>Detect vehicles using YOLO, measure traffic demand, calculate density and optimize four-way signal timing using transparent adaptive rules.</p>
+      <div class="auth-flow">
+        <span><i data-lucide="video"></i> Traffic video</span><span><i data-lucide="scan"></i> YOLO detection</span><span><i data-lucide="car-front"></i> Vehicle count</span><span><i data-lucide="traffic-cone"></i> Adaptive signal</span>
+      </div>
+    </div>
+    <div class="auth-card">
+      <div class="auth-switch"><button id="loginTab" class="active" type="button">Login</button><button id="registerTab" type="button">Register</button></div>
+      <div id="loginPanel">
+        <div class="eyebrow">WELCOME BACK</div><h2>Sign in to your traffic control workspace</h2><p class="muted">Use your project account to continue.</p>
+        <form id="loginForm" class="form-stack" novalidate>
+          <label>Email<input id="loginEmail" type="email" autocomplete="email" placeholder="you@example.com" required></label>
+          <label>Password<div class="password-wrap"><input id="loginPassword" type="password" autocomplete="current-password" placeholder="Enter your password" required><button type="button" class="password-toggle" data-target="loginPassword" aria-label="Show password"><i data-lucide="eye"></i></button></div></label>
+          <button id="loginSubmit" class="primary-btn" type="submit"><span>Sign in</span><i data-lucide="arrow-right"></i></button>
+        </form>
+      </div>
+      <div id="registerPanel" class="hidden">
+        <div class="eyebrow">CREATE ACCOUNT</div><h2>Register your workspace</h2><p class="muted">Create a secure local project account.</p>
+        <form id="registerForm" class="form-stack" novalidate>
+          <label>Name<input id="registerName" type="text" autocomplete="name" placeholder="Your name" required></label>
+          <label>Email<input id="registerEmail" type="email" autocomplete="email" placeholder="you@example.com" required></label>
+          <label>Password<div class="password-wrap"><input id="registerPassword" type="password" autocomplete="new-password" placeholder="Minimum 6 characters" required><button type="button" class="password-toggle" data-target="registerPassword" aria-label="Show password"><i data-lucide="eye"></i></button></div></label>
+          <label>Confirm password<div class="password-wrap"><input id="registerConfirmPassword" type="password" autocomplete="new-password" placeholder="Repeat password" required><button type="button" class="password-toggle" data-target="registerConfirmPassword" aria-label="Show password"><i data-lucide="eye"></i></button></div></label>
+          <button id="registerSubmit" class="primary-btn" type="submit"><span>Create account</span><i data-lucide="user-plus"></i></button>
+        </form>
+      </div>
+      <div id="authError" class="auth-error" role="alert"></div>
+      <button id="authAbout" class="text-btn" type="button"><i data-lucide="info"></i> About this project</button>
+    </div>
+  </div>
+</section>
+
+<section id="appView" class="app-shell hidden">
+  <aside id="sidebar" class="sidebar">
+    <div class="brand"><div class="brand-mark"><i data-lucide="traffic-cone"></i></div><div><div class="brand-title">AI Traffic</div><div class="brand-subtitle">Signal Control</div></div></div>
+    <nav class="nav" aria-label="Primary navigation">
+      <button class="nav-item active" data-page="dashboard"><i data-lucide="layout-dashboard"></i><span>Dashboard</span></button>
+      <button class="nav-item" data-page="live"><i data-lucide="activity"></i><span>Live Analysis</span></button>
+      <button class="nav-item" data-page="upload"><i data-lucide="upload-cloud"></i><span>Upload Analysis</span></button>
+      <button class="nav-item" data-page="results"><i data-lucide="bar-chart-3"></i><span>Results</span></button>
+      <button class="nav-item" data-page="about"><i data-lucide="info"></i><span>About</span></button>
+    </nav>
+    <div class="sidebar-bottom"><div class="sidebar-user"><div id="userAvatar" class="avatar">A</div><div class="min-w-0"><div id="userName" class="user-name">User</div><div id="userEmail" class="user-email">—</div></div></div><button id="logoutBtn" class="logout-btn"><i data-lucide="log-out"></i> Logout</button><div class="sidebar-status"><span class="online-dot"></span><span id="systemStatusText">Checking backend...</span></div></div>
+  </aside>
+
+  <main class="main-area">
+    <header class="topbar"><button id="mobileMenu" class="icon-button mobile-only" aria-label="Open menu"><i data-lucide="menu"></i></button><div class="search-box"><i data-lucide="search"></i><input id="globalSearch" type="search" placeholder="Filter current traffic data..."></div><div class="top-actions"><span id="backendStatus" class="status-pill neutral"><span class="online-dot"></span> Checking</span><button id="notificationButton" class="icon-button" aria-label="Traffic status"><i data-lucide="bell"></i></button><span id="dateLabel" class="top-date"></span></div></header>
+
+    <section id="page-dashboard" class="page active-page">
+      <div class="page-heading"><div><div class="eyebrow">REAL-TIME CONTROL CENTER</div><h2>Traffic Control Dashboard</h2><p>Live vehicle demand, density and adaptive four-way signal status.</p></div><div class="hero-actions"><button id="refreshDashboard" class="secondary-btn"><i data-lucide="refresh-cw"></i> Refresh</button><button id="startAnalysisTop" class="primary-btn small"><i data-lucide="upload"></i> New analysis</button></div></div>
+      <div id="modelNotice" class="model-notice hidden"></div>
+      <div class="metric-grid">
+        <article class="metric-card blue"><div class="metric-top"><span>Total vehicles in frame</span><i data-lucide="car-front"></i></div><div id="totalVehicles" class="metric-value">—</div><div class="metric-note">Latest backend detection snapshot</div></article>
+        <article class="metric-card coral"><div class="metric-top"><span>Traffic density</span><i data-lucide="gauge"></i></div><div id="densityValue" class="metric-value">—</div><div class="metric-note">Based on configured capacity</div></article>
+        <article class="metric-card mint"><div class="metric-top"><span>Active phase</span><i data-lucide="traffic-cone"></i></div><div id="activeSignal" class="metric-value">—</div><div id="activePhaseNote" class="metric-note">—</div></article>
+        <article class="metric-card green"><div class="metric-top"><span>Remaining signal time</span><i data-lucide="timer"></i></div><div id="greenTime" class="metric-value">—</div><div class="metric-note">Backend-controlled countdown</div></article>
+      </div>
+
+      <div class="dashboard-grid">
+        <section class="panel signal-panel"><div class="panel-heading"><div><div class="eyebrow">FOUR-WAY SIGNAL</div><h3>Adaptive intersection</h3></div><span id="signalStatusBadge" class="status-badge neutral">Idle</span></div><div class="intersection"><div class="road horizontal"></div><div class="road vertical"></div><div class="intersection-center"><i data-lucide="traffic-cone"></i></div><div class="signal-position north"><span>NORTH</span><div class="traffic-light" data-direction="NORTH"><i data-light="RED"></i><i data-light="YELLOW"></i><i data-light="GREEN"></i></div></div><div class="signal-position east"><span>EAST</span><div class="traffic-light" data-direction="EAST"><i data-light="RED"></i><i data-light="YELLOW"></i><i data-light="GREEN"></i></div></div><div class="signal-position south"><span>SOUTH</span><div class="traffic-light" data-direction="SOUTH"><i data-light="RED"></i><i data-light="YELLOW"></i><i data-light="GREEN"></i></div></div><div class="signal-position west"><span>WEST</span><div class="traffic-light" data-direction="WEST"><i data-light="RED"></i><i data-light="YELLOW"></i><i data-light="GREEN"></i></div></div></div><div class="signal-summary"><div><span>Current phase</span><strong id="signalSummaryPhase">—</strong></div><div><span>State</span><strong id="signalSummaryState">—</strong></div><div><span>Remaining</span><strong id="signalSummaryTime">—</strong></div></div><div id="signalReason" class="decision-box">No active signal decision.</div></section>
+        <section class="panel"><div class="panel-heading"><div><div class="eyebrow">APPROACH DEMAND</div><h3>Traffic by direction</h3></div><span class="panel-hint">Estimated queue shown as occupancy proxy</span></div><div class="direction-grid" id="directionGrid"></div></section>
+      </div>
+
+      <div class="chart-grid"><section class="panel chart-panel"><div class="panel-heading"><div><div class="eyebrow">TRAFFIC TREND</div><h3>Vehicle detections over time</h3></div></div><div class="chart-wrap"><canvas id="trafficChart"></canvas></div></section><section class="panel chart-panel"><div class="panel-heading"><div><div class="eyebrow">VEHICLE MIX</div><h3>Average vehicle type</h3></div></div><div class="donut-wrap"><canvas id="vehicleDonut"></canvas><div id="donutTotal" class="donut-center">—</div></div><div class="legend-grid"><span><i></i> Cars <b id="legendCars">—</b></span><span><i></i> Motorcycles <b id="legendBikes">—</b></span><span><i></i> Buses <b id="legendBuses">—</b></span><span><i></i> Trucks <b id="legendTrucks">—</b></span></div></section></div>
+
+      <section class="panel insight-panel"><div class="panel-heading"><div><div class="eyebrow">AI DECISION INSIGHT</div><h3>Why this phase?</h3></div><button id="generateInsights" class="secondary-btn small"><i data-lucide="sparkles"></i> Refresh insight</button></div><div id="insightContent" class="insight-content">Upload and analyze a traffic video to generate real traffic insights.</div></section>
+      <section class="panel"><div class="panel-heading"><div><div class="eyebrow">RECENT ACTIVITY</div><h3>Latest analyses</h3></div><button class="text-btn" data-page="results">View all</button></div><div id="recentTable" class="table-container"><div class="loading-state"><span class="spinner"></span> Loading recent analyses...</div></div></section>
+    </section>
+
+    <section id="page-live" class="page">
+      <div class="page-heading">
+        <div><div class="eyebrow">LIVE ANALYSIS</div><h2>Traffic monitoring center</h2><p>Watch the exact annotated frames produced by the active YOLOv8 processing pipeline and monitor the adaptive signal state.</p></div>
+        <button id="cancelLiveJob" class="danger-btn hidden"><i data-lucide="x-circle"></i> Cancel analysis</button>
+      </div>
+
+      <section class="panel current-analysis-panel">
+        <div class="panel-heading">
+          <div><div class="eyebrow">CURRENT ANALYSIS</div><h3 id="liveCurrentTitle">No active analysis</h3><span id="liveCurrentFile" class="panel-hint">Upload a traffic video to begin monitoring.</span></div>
+          <span id="videoStatus" class="status-badge neutral">Idle</span>
+        </div>
+        <div class="live-grid">
+          <section class="video-panel">
+            <div class="video-header"><div><strong>Annotated monitoring preview</strong><span id="videoResolution">—</span></div><span id="liveFrameStatus" class="stream-indicator">Waiting for frames</span></div>
+            <div class="video-shell live-stream-shell">
+              <img id="liveFrameStream" class="live-frame-stream hidden" alt="Live annotated traffic analysis frame" />
+              <video id="trafficVideo" class="hidden" controls playsinline preload="metadata"></video>
+              <div id="videoFallback" class="video-fallback"><i data-lucide="video-off"></i><strong>No active analysis</strong><span>Upload a traffic video to see annotated YOLO frames here.</span></div>
+            </div>
+            <div class="live-progress-strip"><div><span>Processing progress</span><strong id="liveProgressText">0%</strong></div><div class="progress-track"><div id="liveProgressFill" class="progress-fill"></div></div><div class="live-frame-meta"><span id="liveFrameText">0 / 0 frames</span><span id="liveLastUpdate">Last update —</span></div></div>
+          </section>
+          <section class="panel live-metrics embedded-panel">
+            <div class="live-phase-card"><span>Current phase</span><strong id="livePhase">—</strong><small id="liveGreen">—</small></div>
+            <div class="live-kpis"><div><span>Vehicles in frame</span><strong id="liveVehicles">—</strong></div><div><span>Traffic density</span><strong id="liveDensity">—</strong></div></div>
+            <div class="mini-directions" id="miniDirections"></div>
+            <div id="liveDecision" class="decision-box">No active decision.</div>
+          </section>
+        </div>
+      </section>
+
+      <section class="panel previous-videos-panel">
+        <div class="panel-heading"><div><div class="eyebrow">HISTORY</div><h3>Previous Processed Videos</h3><span class="panel-hint">Select a completed run to play its actual processed output.</span></div><button id="refreshVideoHistory" class="secondary-btn small"><i data-lucide="refresh-cw"></i> Refresh</button></div>
+        <div id="previousVideos" class="previous-video-grid"><div class="loading-state"><span class="spinner"></span> Loading processed videos...</div></div>
+      </section>
+    </section>
+
+    <section id="page-upload" class="page"><div class="page-heading"><div><div class="eyebrow">UPLOAD ANALYSIS</div><h2>Analyze a traffic video</h2><p>Upload a local video and let the backend process it with the configured YOLO model.</p></div></div><section class="panel upload-panel"><input id="videoInput" type="file" accept=".mp4,.avi,.mov,.mkv,.webm,.m4v,video/*" hidden><div id="uploadDropZone" class="upload-drop-zone"><div class="upload-icon"><i data-lucide="upload-cloud"></i></div><h3>Drop your traffic video here</h3><p>or click to browse your computer</p><small>MP4, AVI, MOV, MKV, WEBM or M4V · Maximum 500 MB</small><button id="browseVideo" class="secondary-btn" type="button">Browse video</button></div><div id="selectedFile" class="selected-file hidden"><div class="file-icon"><i data-lucide="file-video-2"></i></div><div class="file-info"><strong id="selectedFileName">—</strong><span id="selectedFileMeta">—</span></div><button id="removeVideo" class="icon-button" type="button" aria-label="Remove video"><i data-lucide="x"></i></button></div><div class="upload-actions"><button id="startAnalysis" class="primary-btn" disabled><i data-lucide="play"></i> Start analysis</button></div><div id="jobStatusBox" class="job-status-box hidden"><div class="job-status-header"><div><strong id="jobStatusTitle">Analysis queued</strong><span id="jobStatusMessage">Preparing...</span></div><button id="cancelAnalysis" class="danger-btn small"><i data-lucide="x-circle"></i> Cancel</button></div><div class="progress-track"><div id="jobProgressFill" class="progress-fill"></div></div><div class="job-progress-meta"><span id="jobProgressText">0%</span><span id="jobFrameText">Waiting for backend</span></div></div></section></section>
+
+    <section id="page-results" class="page"><div class="page-heading"><div><div class="eyebrow">RESULTS</div><h2>Analysis results</h2><p>Review processed traffic data and download the generated files.</p></div><button id="refreshResults" class="secondary-btn"><i data-lucide="refresh-cw"></i> Refresh</button></div><div id="resultsEmpty" class="panel empty-state"><i data-lucide="bar-chart-3"></i><h3>No completed analysis</h3><p>Run an analysis to populate results, charts and downloadable files.</p><button class="primary-btn" data-page="upload">Upload video</button></div><div id="resultsContent" class="hidden"><div class="result-actions"><button id="downloadVideo" class="primary-btn"><i data-lucide="download"></i> Download processed video</button><button id="downloadCsv" class="secondary-btn"><i data-lucide="file-spreadsheet"></i> Download CSV</button><button id="newAnalysis" class="secondary-btn"><i data-lucide="plus"></i> New analysis</button></div><section class="metric-grid"><article class="metric-card blue"><div class="metric-top"><span>Peak vehicles in frame</span><i data-lucide="car-front"></i></div><div id="resultPeak" class="metric-value">—</div></article><article class="metric-card coral"><div class="metric-top"><span>Latest density</span><i data-lucide="gauge"></i></div><div id="resultDensity" class="metric-value">—</div></article><article class="metric-card mint"><div class="metric-top"><span>Latest phase</span><i data-lucide="traffic-cone"></i></div><div id="resultPhase" class="metric-value">—</div></article><article class="metric-card green"><div class="metric-top"><span>Processed frames</span><i data-lucide="film"></i></div><div id="resultFrames" class="metric-value">—</div></article></section><div class="chart-grid"><section class="panel chart-panel"><div class="panel-heading"><div><div class="eyebrow">DENSITY HISTORY</div><h3>Vehicle count and density</h3></div></div><div class="chart-wrap"><canvas id="resultTrafficChart"></canvas></div></section><section class="panel chart-panel"><div class="panel-heading"><div><div class="eyebrow">APPROACH DEMAND</div><h3>Average vehicles by direction</h3></div></div><div class="chart-wrap"><canvas id="approachChart"></canvas></div></section></div><section class="panel"><div class="panel-heading"><div><div class="eyebrow">JOB INFORMATION</div><h3>Analysis details</h3></div></div><div id="resultDetails" class="details-grid"></div></section></div><section class="panel"><div class="panel-heading"><div><div class="eyebrow">HISTORY</div><h3>Recent analysis jobs</h3></div></div><div id="resultsHistory" class="table-container"></div></section></section>
+
+    <section id="page-about" class="page"><div class="page-heading"><div><div class="eyebrow">PROJECT</div><h2>About the system</h2><p>Transparent AI-assisted traffic management for a four-way intersection.</p></div></div><div class="about-grid"><section class="panel"><div class="eyebrow">WORKFLOW</div><h3>From video to adaptive signal</h3><div class="about-flow"><span>Traffic Video</span><b>→</b><span>YOLO Detection</span><b>→</b><span>Vehicle Count</span><b>→</b><span>Density</span><b>→</b><span>Signal Optimization</span><b>→</b><span>Results</span></div><p class="muted about-text">The system processes a traffic video locally, detects configurable vehicle classes, assigns detections to four approach regions, estimates traffic demand and queue occupancy, then selects signal phases using deterministic adaptive rules.</p></section><section class="panel"><div class="eyebrow">TECHNOLOGY</div><h3>Open-source local stack</h3><div class="tag-list"><span>Python</span><span>FastAPI</span><span>OpenCV</span><span>Ultralytics YOLO</span><span>SQLite</span><span>Tailwind CSS</span><span>Vanilla JavaScript</span><span>Chart.js</span></div></section><section class="panel"><div class="eyebrow">CONTROL RULES</div><h3>Adaptive timing</h3><ul class="about-list"><li>Minimum green: <strong id="aboutMinGreen">15s</strong></li><li>Maximum green: <strong id="aboutMaxGreen">60s</strong></li><li>Yellow: <strong id="aboutYellow">3s</strong></li><li>Queue: <strong>estimated occupancy proxy</strong></li><li>Fairness: <strong>waiting-time threshold prevents starvation</strong></li></ul></section></div></section>
+  </main>
+</section>
+<script src="/static/js/app.js"></script>
+</body>
+</html>

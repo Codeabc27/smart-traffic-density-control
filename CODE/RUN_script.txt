@@ -1,0 +1,22 @@
+cd CODE
+
+uvicorn BACKEND.main:app --host 127.0.0.1 --port 8000 --reload
+
+DATA_BASE INITIAL()
+
+DELETE(del DATA_BASE\database\traffic.db)
+
+CREATE NEW(python -c "from BACKEND.database import initialize_database; initialize_database(); print('DATABASE INITIALIZED')")
+
+Conda (
+
+cd /d C:\Users\WIN\Desktop\AI_TRAFFIC_SIGNAL_CONTROL
+
+conda create -n traffic python=3.11 -y
+
+conda activate traffic
+
+pip install -r requirements.txt
+
+python -m uvicorn BACKEND.main:app --reload --host 127.0.0.1 --port 8000
+)
