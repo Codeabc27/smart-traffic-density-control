@@ -5,11 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="AI Traffic Signal Control — real-time vehicle detection and adaptive four-way signal optimization.">
   <title>AI Traffic Signal Control</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script>tailwind.config={theme:{extend:{colors:{primary:{50:'#eef2ff',100:'#e0e7ff',500:'#6366f1',600:'#4f46e5',700:'#4338ca',800:'#3730a3'}}}}};</script>
-  <script src="https://unpkg.com/lucide@latest"></script>
+  <script src="https://unpkg.com/lucide@1.70.0"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
-  <link rel="stylesheet" href="/static/css/style.css">
+  <link rel="stylesheet" href="./css/style.css">
 </head>
 <body>
 <div id="toast" class="toast" role="status" aria-live="polite"></div>
@@ -121,7 +119,7 @@
       <section class="panel previous-videos-panel">
         <div class="panel-heading"><div><div class="eyebrow">HISTORY</div><h3>Previous Processed Videos</h3><span class="panel-hint">Select a completed run to play its actual processed output.</span></div><button id="refreshVideoHistory" class="secondary-btn small"><i data-lucide="refresh-cw"></i> Refresh</button></div>
         <div id="previousVideos" class="previous-video-grid"><div class="loading-state"><span class="spinner"></span> Loading processed videos...</div></div>
-      </section>
+      </section>p
     </section>
 
     <section id="page-upload" class="page"><div class="page-heading"><div><div class="eyebrow">UPLOAD ANALYSIS</div><h2>Analyze a traffic video</h2><p>Upload a local video and let the backend process it with the configured YOLO model.</p></div></div><section class="panel upload-panel"><input id="videoInput" type="file" accept=".mp4,.avi,.mov,.mkv,.webm,.m4v,video/*" hidden><div id="uploadDropZone" class="upload-drop-zone"><div class="upload-icon"><i data-lucide="upload-cloud"></i></div><h3>Drop your traffic video here</h3><p>or click to browse your computer</p><small>MP4, AVI, MOV, MKV, WEBM or M4V · Maximum 500 MB</small><button id="browseVideo" class="secondary-btn" type="button">Browse video</button></div><div id="selectedFile" class="selected-file hidden"><div class="file-icon"><i data-lucide="file-video-2"></i></div><div class="file-info"><strong id="selectedFileName">—</strong><span id="selectedFileMeta">—</span></div><button id="removeVideo" class="icon-button" type="button" aria-label="Remove video"><i data-lucide="x"></i></button></div><div class="upload-actions"><button id="startAnalysis" class="primary-btn" disabled><i data-lucide="play"></i> Start analysis</button></div><div id="jobStatusBox" class="job-status-box hidden"><div class="job-status-header"><div><strong id="jobStatusTitle">Analysis queued</strong><span id="jobStatusMessage">Preparing...</span></div><button id="cancelAnalysis" class="danger-btn small"><i data-lucide="x-circle"></i> Cancel</button></div><div class="progress-track"><div id="jobProgressFill" class="progress-fill"></div></div><div class="job-progress-meta"><span id="jobProgressText">0%</span><span id="jobFrameText">Waiting for backend</span></div></div></section></section>
@@ -131,6 +129,6 @@
     <section id="page-about" class="page"><div class="page-heading"><div><div class="eyebrow">PROJECT</div><h2>About the system</h2><p>Transparent AI-assisted traffic management for a four-way intersection.</p></div></div><div class="about-grid"><section class="panel"><div class="eyebrow">WORKFLOW</div><h3>From video to adaptive signal</h3><div class="about-flow"><span>Traffic Video</span><b>→</b><span>YOLO Detection</span><b>→</b><span>Vehicle Count</span><b>→</b><span>Density</span><b>→</b><span>Signal Optimization</span><b>→</b><span>Results</span></div><p class="muted about-text">The system processes a traffic video locally, detects configurable vehicle classes, assigns detections to four approach regions, estimates traffic demand and queue occupancy, then selects signal phases using deterministic adaptive rules.</p></section><section class="panel"><div class="eyebrow">TECHNOLOGY</div><h3>Open-source local stack</h3><div class="tag-list"><span>Python</span><span>FastAPI</span><span>OpenCV</span><span>Ultralytics YOLO</span><span>SQLite</span><span>Tailwind CSS</span><span>Vanilla JavaScript</span><span>Chart.js</span></div></section><section class="panel"><div class="eyebrow">CONTROL RULES</div><h3>Adaptive timing</h3><ul class="about-list"><li>Minimum green: <strong id="aboutMinGreen">15s</strong></li><li>Maximum green: <strong id="aboutMaxGreen">60s</strong></li><li>Yellow: <strong id="aboutYellow">3s</strong></li><li>Queue: <strong>estimated occupancy proxy</strong></li><li>Fairness: <strong>waiting-time threshold prevents starvation</strong></li></ul></section></div></section>
   </main>
 </section>
-<script src="/static/js/app.js"></script>
+<script src="./js/app.js"></script>
 </body>
 </html>

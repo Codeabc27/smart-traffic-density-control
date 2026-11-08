@@ -64,7 +64,9 @@ def get_user_from_token(token: str | None):
     return dict(row) if row else None
 
 
-def require_user(traffic_session: str | None = Cookie(default=None, alias=COOKIE_NAME)):
+def require_user(
+    traffic_session: str | None = Cookie(default=None, alias=COOKIE_NAME),
+):
     user = get_user_from_token(traffic_session)
     if not user:
         raise HTTPException(401, "Authentication required")

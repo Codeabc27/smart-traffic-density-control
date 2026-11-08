@@ -1165,6 +1165,14 @@ The backend requires the job to have `completed` status.
 
 ---
 
+#### `DELETE /api/results/{job_id}`
+
+Authentication: Yes.
+
+Permanently deletes the selected user's saved analysis, its stored traffic metrics, and files in that job's directory. Active jobs cannot be deleted.
+
+---
+
 ### 16.7 About
 
 #### `GET /api/about`
@@ -1686,7 +1694,7 @@ Local secrets/configuration should be stored in `.env` rather than committed to 
 6. Video processing speed depends on the available hardware.
 7. The current live synchronization uses HTTP polling rather than WebSocket/SSE.
 8. The live-frame transport retains only the latest frame for each job rather than a complete frame history.
-9. The processed MP4 uses the OpenCV `mp4v` codec and browser playback compatibility can vary.
+9. Processed MP4 files are transcoded to H.264 for browser playback; FFmpeg is installed through the pinned `imageio-ffmpeg` dependency.
 10. No advanced traffic prediction model is implemented.
 11. No emergency-vehicle recognition or priority system is implemented.
 12. No multi-intersection coordination is implemented.
